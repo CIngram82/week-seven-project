@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Notice Me Senpai</title>
+  <title>New Message</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 
@@ -13,21 +13,17 @@
     <div></div>
     <a href="newGabble">Create a new gabble</a>
     <div></div>
-    <a href="login">Log In</a>
-    <div></div>
-    <a href="regNewUser">Sign up</a>
+    <a href="logout">Logout</a>
   </header>
 
   <section>
-    <div class="singleGabble">
-      {{name}} {{text}} {{date created}}
-    </div>
-  </section>
+    <h2>Create a new gab</h2>
 
-  <section>
-    <h2>Liked by</h2> {{all the likes!}}
+    <form class="" action="/newGabbleMessage" method="post">
+      <textarea name="newGabbleText" rows="4" cols="80"></textarea>
+      <input type="submit" name="" value="Save gab">
+    </form>
   </section>
-
 </body>
 
 </html>

@@ -18,3 +18,9 @@ header{
 header div{
 border: 1px solid red;
 }
+
+.singleGabble{
+  border: 1px solid black;
+  height: 80px;
+  width: 500px;
+}

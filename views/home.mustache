@@ -3,28 +3,31 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Notice Me Senpai</title>
+  <title>Home</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
-  <header>
     <header>
       <a href="home">Gabble Home</a>
       <div></div>
       <a href="newGabble">Create a new gabble</a>
       <div></div>
-      <a href="login">Log In</a>
-      <div></div>
-      <a href="regNewUser">Sign up</a>
+      <a href="logout">Logout</a>
     </header>
 
   <section>
-    {{all gabbles in order by time}}
+    {{#userInfo}}
+    <h1>Welcome {{displayName}}</h1>
+    {{/userInfo}}
+    <p>all gabbles in order by time</p>
+    {{#allMessages}}
     <div class="singleGabble">
-      {{name}} {{text}} {{date created}}
+      <p>User Id{{userId}}: {{text}} </p>
+      <p>{{createdAt}}  Likes:{placeholder}</p>
     </div>
-    {{end all gabbles in order by time}}
+    {{/allMessages}}
+    <p>end all gabbles in order by time</p>
   </section>
 </body>
 
