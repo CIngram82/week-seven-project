@@ -13,7 +13,7 @@
   </header>
   <h2>Sign up</h2>
 
-  <form class="" action="index.html" method="post">
+  <form class="" action="/createNewUser" method="post">
     <label for="">Username</label>
     <input type="text" name="username" value="">
     <label for="">Display Name</label>
@@ -24,7 +24,9 @@
     <input type="password" name="passwordConferm" value="">
     <input type="submit" name="" value="Sign up">
   </form>
-
+{{#message}}
+<h3>{{.}}</h3>
+{{/message}}
 </body>
 
 </html>

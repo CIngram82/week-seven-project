@@ -30,19 +30,29 @@ const db = new Sequelize('gabble', 'Chris', '', {
   dialect: 'postgres',
 });
 
-const User = db.define('user', {
-  username: {type: Sequelize.STRING, unique: true}, // Unique?
-  password: Sequelize.STRING, // need to add a hash to this ask ben or luke about it.
-  displayName: Sequelize.STRING,
-});
-
-User.sync().then(function() {
-  console.log("User BD online");
+const Users = db.define('users', {
+  username: {type: Sequelize.STRING, unique: true, required: true}, // Unique?
+  password: {type: Sequelize.STRING, required: true}, // need to add a hash to this ask ben or luke about it.
+  displayName: { type: Sequelize.STRING, unique: true,required: true},
 });
 
 const Messages = db.define('messages', {
-  text: Sequelize.STRING,
-  userId: Sequelize.INTEGER,
+  text: {type:Sequelize.STRING(140), required: true}
+});
+
+const Likes = db.define('likes', {
+});
+
+// link(not zelda)ing tables
+Likes.belongsTo(Users);
+
+Likes.belongsTo(Messages);
+
+Messages.belongsTo(Users);
+
+// N'stncing tables
+Likes.sync().then(function() {
+  console.log("Likes BD online");
 });
 
 Messages.sync().then(function() {
@@ -50,31 +60,20 @@ Messages.sync().then(function() {
 
 });
 
-const Likes = db.define('likes', {
-  messagesId: Sequelize.INTEGER,
-  userId: Sequelize.INTEGER,
+Users.sync().then(function() {
+  console.log("Users BD online");
 });
 
-Likes.sync().then(function() {
-  console.log("Likes BD online");
-});
+
 //////End of Schemas
 //////Start of get and post
 
+// log in and out
 server.get('/', function(req,res){
   res.render('login');
 });
-
-server.get('/newGabble', function(req,res){
-  res.render('newGabble');
-});
-
-server.get('/gabInfo', function(req,res){
-  res.render('gabInfo');
-});
-
 server.post('/login', function(req,res){
-  User.findOne({ where:{
+  Users.findOne({ where:{
     username : req.body.username,
     password : req.body.password
   }})
@@ -85,6 +84,56 @@ server.post('/login', function(req,res){
   .catch(function(){
     res.render('login');
   });
+});
+server.get('/logout', function(req,res){
+  req.session.destroy(function(){
+    res.redirect('/');
+  })
+})
+
+// reg users
+server.get('/regNewUser', function(req,res){
+  res.render('regNewUser')
+});
+
+server.post('/createNewUser', function(req,res){
+  const newUserName = req.body.username;
+  const newUserDisplayName = req.body.displayName;
+  const newUserPassword = req.body.password;
+  const newUserPasswordConferm = req.body.passwordConferm;
+  if (newUserPassword !== newUserPasswordConferm) {
+    return res.redirect('/createNewUser',{
+    message: "passwords don't match"
+  })}
+  Users.create({
+    username: newUserName,
+    password: newUserPassword,
+    displayName: newUserDisplayName
+  }).then(function(){
+    res.render('/',{
+      message: "Please log in with your new account!"
+    })
+  })
+});
+
+server.get('/newGabble', function(req,res){
+  res.render('newGabble');
+});
+server.post('/newGabbleMessage', function(req,res){
+  Messages.create({
+    text: req.body.newGabbleText,
+    userId: req.session.who.id
+  })
+  .then(function(gabble){
+    res.render('home',{
+      userInfo: req.session.who,
+      allMessages : gabble
+    })
+  })
+})
+
+server.get('/gabInfo', function(req,res){
+  res.render('gabInfo');
 });
 
 server.get('/home', function(req,res){
@@ -97,20 +146,38 @@ server.get('/home', function(req,res){
     })
 });
 
-server.get('/regNewUser', function(req,res){
-  res.render('regNewUser')
-});
 
-server.post('/newGabbleMessage', function(req,res){
-  Messages.create({
-    text: req.body.newGabbleText,
+server.get('/likesFor/:id', function(req,res){
+  const id = req.params.id;
+  Likes.findAll({
+      where: {messageId: id}
+  })
+  .then(function(messageLikes){
+    res.render('gabinfo',{
+    usersWhoLike: messageLikes
+  })
+  })
+})
+
+server.post('/likeGabble/:id',function(req,res){
+  const id = parseInt(req.params.id);
+  Likes.create({
+    messageId: id,
     userId: req.session.who.id
   })
-  .then(function(gabble){
-    res.render('home',{
-      userInfo: req.session.who,
-      allMessages : gabble
-    })
+  .then(function(){
+    res.redirect('/likesFor/:id')
+  })
+});
+
+server.post('/deleteGabble/:id',function(req,res){
+  const id = parseInt(req.params.id);
+  Message.destroy({
+    where: { id : id}
+  }).then(function(){
+    Likes.destroy({
+      where: { messagesId: id}
+    });
   })
 })
 // Use Express and Sequelize to build a social network for students.
@@ -135,10 +202,13 @@ server.post('/newGabbleMessage', function(req,res){
 // <>View all messages with the newest first
 // <>Create a new message
 // Delete one of your own messages
-// Like a message
-// See who liked a message
+// <>Like a message
+// <>See who liked a message
 // This will require your knowledge of forms, validation, sessions, middleware,
-//and Sequelize. You will likely have to look up some features of these.
+// and Sequelize. You will likely have to look up some features of these.
 //
 // You may want to consider running sequelize seed:create and create a new seed
-//file that will create several users and gabs.
+// file that will create several users and gabs.
+
+
+// https://codepen.io/geoffmuskett/pen/uldmJ use to set characters remaining count

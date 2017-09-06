@@ -25,12 +25,10 @@
 
   <section>
     <h2>Liked by</h2>
-    <p>all the likes!</p>
-    <p>user name likes this!</p>
-    <p>user name likes this!</p>
-    <p>user name likes this!</p>
-    <p>user name likes this!</p>
-    <p>user name likes this!</p>
+    {{#usersWhoLike}}
+    <p>Message ID:{{messagesId}}</p>
+    <p>User ID:{{userId}}</p>
+    {{/usersWhoLike}}
   </section>
 
 </body>
