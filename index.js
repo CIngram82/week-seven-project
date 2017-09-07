@@ -7,67 +7,48 @@ const bodyparse = require('body-parser');
 server.engine('mustache', mustache());
 server.set('views', './views');
 server.set('view engine', 'mustache');
-
 server.use(bodyparse.urlencoded({
   extended: false
 }));
-
 server.use(express.static('public'));
-
 server.use(session({
   secret: 'HI BEN!53wzcr7bgyhu',
   resave: false,
   saveUninitialized: true,
 }));
-
 server.listen(3000, function() {
   console.log('Gabble ready for all the gabs');
 });
-
-
 ////// All Schemas
 const db = new Sequelize('gabble', 'Chris', '', {
   dialect: 'postgres',
 });
-
 const Users = db.define('users', {
   username: {type: Sequelize.STRING, unique: true, required: true}, // Unique?
   password: {type: Sequelize.STRING, required: true}, // need to add a hash to this ask ben or luke about it.
   displayName: { type: Sequelize.STRING, unique: true,required: true},
 });
-
 const Messages = db.define('messages', {
   text: {type:Sequelize.STRING(140), required: true}
 });
-
-const Likes = db.define('likes', {
-});
-
+const Likes = db.define('likes', {});
 // link(not zelda)ing tables
 Likes.belongsTo(Users);
-
 Likes.belongsTo(Messages);
-
 Messages.belongsTo(Users);
-
 // N'stncing tables
 Likes.sync().then(function() {
   console.log("Likes BD online");
 });
-
 Messages.sync().then(function() {
   console.log("Messages BD online");
 
 });
-
 Users.sync().then(function() {
   console.log("Users BD online");
 });
-
-
 //////End of Schemas
 //////Start of get and post
-
 // log in and out
 server.get('/', function(req,res){
   res.render('login');
@@ -90,7 +71,6 @@ server.get('/logout', function(req,res){
     res.redirect('/');
   })
 })
-
 // reg users
 server.get('/regNewUser', function(req,res){
   res.render('regNewUser')
@@ -110,7 +90,7 @@ server.post('/createNewUser', function(req,res){
     password: newUserPassword,
     displayName: newUserDisplayName
   }).then(function(){
-    res.render('/',{
+    res.render('login',{
       message: "Please log in with your new account!"
     })
   })
@@ -124,10 +104,13 @@ server.post('/newGabbleMessage', function(req,res){
     text: req.body.newGabbleText,
     userId: req.session.who.id
   })
-  .then(function(gabble){
-    res.render('home',{
-      userInfo: req.session.who,
-      allMessages : gabble
+  .then(function(){
+    Messages.findAll({order: ['"createdAt", DESC'] })
+    .then(function(messages){
+      res.render('home',{
+        userInfo : req.session.who,
+        allMessages : messages
+    })
     })
   })
 })
@@ -190,7 +173,7 @@ server.post('/deleteGabble/:id',function(req,res){
 
 // Messages should:
 // <>be associated with a user who wrote them
-// have up to 140 characters of text
+// <>have up to 140 characters of text
 
 // Likes should:
 // <>be associated with a user who made the like and a message that was liked
