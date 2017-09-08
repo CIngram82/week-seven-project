@@ -9,25 +9,26 @@
 
 <body>
   <header>
-    <a href="home">Gabble Home</a>
+    <a href="/home">Gabble Home</a>
     <div></div>
-    <a href="newGabble">Create a new gabble</a>
+    <a href="/newGabble">Create a new gabble</a>
     <div></div>
-    <a href="logout">Logout</a>
+    <a href="/logout">Logout</a>
   </header>
 
   <section>
-    <div class="singleGabble">
-      <p><a href="">name: </a> text</p>
-      <p>date created</p>
-    </div>
-  </section>
-
-  <section>
     <h2>Liked by</h2>
+    <section>
+      <div class="singleGabble">
+        <p><a href="">Gab: </a> {{text}}</p>
+        <p>{{created}}</p>
+      </div>
+    </section>
+
     {{#usersWhoLike}}
-    <p>Message ID:{{messagesId}}</p>
-    <p>User ID:{{userId}}</p>
+
+    <p>Liked By:{{user.username}}</p>
+
     {{/usersWhoLike}}
   </section>
 

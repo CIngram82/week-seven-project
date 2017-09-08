@@ -9,22 +9,22 @@
 
 <body>
     <header>
-      <a href="home">Gabble Home</a>
+      <a href="/home">Gabble Home</a>
       <div></div>
-      <a href="newGabble">Create a new gabble</a>
+      <a href="/newGabble">Create a new gabble</a>
       <div></div>
-      <a href="logout">Logout</a>
+      <a href="/logout">Logout</a>
     </header>
 
   <section>
     {{#userInfo}}
     <h1>Welcome {{displayName}}</h1>
     {{/userInfo}}
-    <p>all gabbles in order by time</p>
     {{#allMessages}}
     <div class="singleGabble">
-      <p>User Id{{userId}}: {{text}} </p>
-      <p>{{createdAt}}  Likes:<a href="/likesFor/{{id}}">{number of likes}</a></p>
+      <p>User Id: {{user.username}} </p>
+      <p>Gab: {{text}} </p>
+      <p>{{createdAt}}  Like by: <a href="/likesFor/{{id}}">{{likes}} Users.</a></p>
       <form class="" action="/likeGabble/{{id}}" method="post">
         <input type="submit" name="" value="Like! <3">
       </form>
@@ -33,7 +33,6 @@
       </form>
     </div>
     {{/allMessages}}
-    <p>end all gabbles in order by time</p>
   </section>
 </body>
 
